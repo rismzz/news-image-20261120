@@ -5,12 +5,14 @@
 [![rank](https://make.fun/badge/news-image-20261120/rismzz/news-image-20261120/rank.svg)](https://make.fun/bounty/news-image-20261120)
 
 A dense broadsheet that sums up Friday 20 November 2026 in a single
-1024×1024 image: 31 distinct stories, first reported that day in any
-time zone. Lead: Trump puts the Iran war decision off to 2027. Also
-inside: the ICJ's Myanmar genocide ruling, Cyclone Akvan's landfall,
+1024×1024 image: 43 headline stories, first reported that day in any
+time zone. Lead: the ICJ's historic ruling that Myanmar committed
+genocide against the Rohingya. Also inside: the Trump–Xi–Putin joint
+peace declaration from Shenzhen, Cyclone Akvan's landfall in Odisha,
+the Wall Street rout (Nasdaq −5.28%, wiping out its 2026 gains),
 Voyager 1 reaching one light-day out, Hayabusa2's engine trouble, GTA
 VI passing The Odyssey's $1.8bn run, and a markets ticker with the
-day's falls — plus a UTC timeline strip and a visible DATE CHECK line.
+day's closes — plus a UTC timeline strip and a visible DATE CHECK line.
 
 ## How it works
 

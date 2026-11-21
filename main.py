@@ -1,73 +1,57 @@
 #!/usr/bin/env python3
-"""Copy the 20 November 2026 broadsheet into the grader's output dir.
+"""Entrypoint for the news-image-20261120 entry.
 
-The poster itself is entry.png next to this file, rendered ahead of
-time by render_frontpage.py. This entrypoint only checks the file
-is a PNG of at most 1024x1024 px and at most 1 MiB, then copies it
-to $MAKEFUN_OUTPUT_DIR/entry.png (default /output). Standard
-library only, no network, no clock, no randomness: two runs write
-identical bytes.
+Verifies the bundled entry.png (PNG magic bytes, IHDR size at most
+1024x1024, file at most 1 MiB) and copies it to
+$MAKEFUN_OUTPUT_DIR/entry.png (default /output). Standard library
+only, no network. Deterministic: two runs write identical bytes.
 """
 
 import hashlib
 import os
+import shutil
+import struct
 import sys
-from pathlib import Path
 
-HERE = Path(__file__).resolve().parent
-POSTER = HERE / "entry.png"
-MAX_BYTES = 1_048_576
-MAX_SIDE = 1024
-MAGIC = b"\x89PNG\r\n\x1a\n"
-CHUNK = 65536
+HERE = os.path.dirname(os.path.abspath(__file__))
+SRC = os.path.join(HERE, "entry.png")
+MAX_BYTES = 1048576
+MAX_DIM = 1024
 
 
-def die(msg):
-    print(f"main.py: {msg}", file=sys.stderr)
-    return 1
+def fail(msg):
+    print("main.py: ERROR: %s" % msg, file=sys.stderr)
+    sys.exit(1)
 
 
-def png_side(path):
-    """Return (width, height) from the IHDR chunk, or None if unreadable."""
-    with path.open("rb") as fh:
-        head = fh.read(24)
-    if len(head) < 24 or head[:8] != MAGIC or head[12:16] != b"IHDR":
-        return None
-    width = int.from_bytes(head[16:20], "big")
-    height = int.from_bytes(head[20:24], "big")
-    return width, height
+def verify_png(path):
+    with open(path, "rb") as fh:
+        data = fh.read()
+    if len(data) > MAX_BYTES:
+        fail("entry.png is %d bytes, over the 1 MiB limit" % len(data))
+    if data[:8] != b"\x89PNG\r\n\x1a\n":
+        fail("entry.png lacks the PNG magic bytes")
+    if len(data) < 33 or data[12:16] != b"IHDR":
+        fail("entry.png lacks an IHDR chunk")
+    width, height = struct.unpack(">II", data[16:24])
+    if width > MAX_DIM or height > MAX_DIM:
+        fail("entry.png is %dx%d, over the 1024x1024 limit" % (width, height))
+    return hashlib.sha256(data).hexdigest(), len(data)
 
 
 def main():
-    if not POSTER.is_file():
-        return die("entry.png is missing from the repository")
-    size = POSTER.stat().st_size
-    if size > MAX_BYTES:
-        return die(f"entry.png is {size} bytes, over the 1 MiB cap")
-    sides = png_side(POSTER)
-    if sides is None:
-        return die("entry.png is not a readable PNG file")
-    if sides[0] > MAX_SIDE or sides[1] > MAX_SIDE:
-        return die(f"entry.png is {sides[0]}x{sides[1]}, over the 1024 cap")
-    out_dir = Path(os.environ.get("MAKEFUN_OUTPUT_DIR", "/output"))
-    out_dir.mkdir(parents=True, exist_ok=True)
-    dest = out_dir / "entry.png"
-    digest = hashlib.sha256()
-    with POSTER.open("rb") as src, dest.open("wb") as dst:
-        while True:
-            block = src.read(CHUNK)
-            if not block:
-                break
-            digest.update(block)
-            dst.write(block)
-    if dest.stat().st_size != size:
-        return die("copied entry.png came out short")
-    check = hashlib.sha256(dest.read_bytes()).hexdigest()
-    if check != digest.hexdigest():
-        return die("copied entry.png failed its sha256 check")
-    print(f"wrote {dest} ({size} bytes, sha256 {digest.hexdigest()[:16]}...)")
-    return 0
+    out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
+    digest, size = verify_png(SRC)
+    os.makedirs(out_dir, exist_ok=True)
+    dest = os.path.join(out_dir, "entry.png")
+    shutil.copyfile(SRC, dest)
+    with open(dest, "rb") as fh:
+        copied = hashlib.sha256(fh.read()).hexdigest()
+    if copied != digest:
+        fail("copied entry.png hash mismatch: %s != %s" % (copied, digest))
+    print("main.py: verified entry.png (%d bytes, sha256 %s)" % (size, digest))
+    print("main.py: wrote %s (sha256 match)" % dest)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()
