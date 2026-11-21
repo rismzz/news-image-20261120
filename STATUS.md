@@ -85,11 +85,13 @@ submission 01a1f66c-c109-73c5-a16f-7dd5e1cf7cca).
 - `node cli/makefun.mjs check` pada commit 09d48e60 + bundle r2:
   13 passed, 1 failed, 5 skipped, 5 dicek saat submit.
 - thinking_reproduces PASS: 372/497 baris ditulis agen (74,8%, batas 30%)
+  — pada bundle bersih dari HEAD a84f7a29: 449/507 (88,5%)
 - thinking_revised PASS: render_frontpage.py dari 6 pesan, main.py dari 2
 - transcripts_run_record PASS: scheduled prompt, agent facts, system
   prompt uploaded, 1 instruction file, no MCP
 - thinking_in_window PASS: 86 timestamp dalam jendela buka–terima
-- thinking_turns PASS (31 turn); thinking_own_work PASS (372/497)
+  (96 pada bundle bersih); thinking_turns PASS (31 turn; 35 pada
+  bundle bersih); thinking_own_work PASS (372/497; 449/507 bersih)
 - license_osi PASS; competition_open, snapshot, entrypoint,
   transcripts_present, transcripts_recorded, thinking_wellformed PASS.
 - thinking_priced FAIL: 0 usage row menempel pada sesi builder
@@ -111,9 +113,13 @@ submission 01a1f66c-c109-73c5-a16f-7dd5e1cf7cca).
 ## Bundle
 
 - Lokasi: ~/workspace/makefun/bundles/news-image-20261120-r2.tar.gz
-  (2.814.690 byte, sha256 9a592a48bb78165158db534fd90bbf190c4182250b4c39e38f2dc123a4581272)
-  — dibuat dari commit 09d48e60 (repo masih dirty oleh STATUS.md round 1
-  saat itu; bundle bersih dari HEAD menyusul di bawah).
+  (2.826.971 byte, sha256 57174cfcf095b5dd1b54f73ae2bd0f9bd03f990fb61bdb76d63243e8cbda13f6)
+  — bundle BERSIH dari commit a84f7a29d36e72f393084850f8f31637ad07a06c
+  (HEAD saat bundle dibuat; repo bersih, tanpa repo.dirty). Bundle
+  pertama dari commit 09d48e60 (2.814.690 byte, sha256
+  9a592a48bb78165158db534fd90bbf190c4182250b4c39e38f2dc123a4581272)
+  dibuat saat repo masih dirty oleh STATUS.md round 1 — digantikan
+  bundle bersih ini.
 - 1 sesi Muse app (builder 4ac5022e) + parent-session sesi agen utama
   87f320fc sebagai context, run record lengkap, system prompt uploaded,
   prompt-origin scheduled (body cron sebagai prompt-file), no MCP.
